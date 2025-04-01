@@ -1,4 +1,4 @@
-package co.edu.uceva.microserviciomensajeria.entities;
+package co.edu.uceva.microserviciomensajeria.model.entities;
 
 
 import jakarta.persistence.Entity;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class mensajeria {
+public class Mensajeria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
