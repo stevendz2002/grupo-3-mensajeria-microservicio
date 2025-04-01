@@ -1,0 +1,10 @@
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 1', 'Destinatario 1', 'Asunto 1', 'Mensaje 1', '2023-01-01');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 2', 'Destinatario 2', 'Asunto 2', 'Mensaje 2', '2023-01-02');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 3', 'Destinatario 3', 'Asunto 3', 'Mensaje 3', '2023-01-03');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 4', 'Destinatario 4', 'Asunto 4', 'Mensaje 4', '2023-01-04');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 5', 'Destinatario 5', 'Asunto 5', 'Mensaje 5', '2023-01-05');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 6', 'Destinatario 6', 'Asunto 6', 'Mensaje 6', '2023-01-06');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 7', 'Destinatario 7', 'Asunto 7', 'Mensaje 7', '2023-01-07');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 8', 'Destinatario 8', 'Asunto 8', 'Mensaje 8', '2023-01-08');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 9', 'Destinatario 9', 'Asunto 9', 'Mensaje 9', '2023-01-09');
+INSERT INTO mensajeria (remitente, destinatario, asunto, mensaje, fecha_envio) VALUES ('Remitente 10', 'Destinatario 10', 'Asunto 10', 'Mensaje 10', '2023-01-10');
