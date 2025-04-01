@@ -1,7 +1,7 @@
-package co.edu.uceva.microserviciomensajeria.model.services;
+package co.edu.uceva.microserviciomensajeria.domain.services;
 
-import co.edu.uceva.microserviciomensajeria.model.entities.Mensajeria;
-import co.edu.uceva.microserviciomensajeria.model.repositories.IMensajeriaRepository;
+import co.edu.uceva.microserviciomensajeria.domain.model.Mensajeria;
+import co.edu.uceva.microserviciomensajeria.domain.repositories.IMensajeriaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

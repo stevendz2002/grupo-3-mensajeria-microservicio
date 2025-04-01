@@ -1,6 +1,6 @@
-package co.edu.uceva.microserviciomensajeria.model.repositories;
+package co.edu.uceva.microserviciomensajeria.domain.repositories;
 
-import co.edu.uceva.microserviciomensajeria.model.entities.Mensajeria;
+import co.edu.uceva.microserviciomensajeria.domain.model.Mensajeria;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

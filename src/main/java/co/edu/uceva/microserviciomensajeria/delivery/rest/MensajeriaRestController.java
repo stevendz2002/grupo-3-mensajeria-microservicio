@@ -1,13 +1,15 @@
-package co.edu.uceva.microserviciomensajeria.controllers;
+package co.edu.uceva.microserviciomensajeria.delivery.rest;
 
-import co.edu.uceva.microserviciomensajeria.model.entities.Mensajeria ;
-import co.edu.uceva.microserviciomensajeria.model.services.IMensajeriaService ;
+import jakarta.validation.Valid;
+import co.edu.uceva.microserviciomensajeria.domain.model.Mensajeria ;
+import co.edu.uceva.microserviciomensajeria.domain.services.IMensajeriaService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -85,11 +87,21 @@ public class MensajeriaRestController {
     }
 
     /**
-     * Crear un nuevo mensajeria pasando el objeto en el cuerpo de la petición.
+     * Crear un nuevo mensajer pasando el objeto en el cuerpo de la petición, usando validaciones.
      */
     @PostMapping("/mensajerias")
-    public ResponseEntity<Map<String, Object>> save(@RequestBody Mensajeria mensajeria) {
+    public ResponseEntity<Map<String, Object>> save(@Valid @RequestBody Mensajeria mensajeria,BindingResult result) {
         Map<String, Object> response = new HashMap<>();
+
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+                    .toList();
+
+            response.put("errors", errors);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
 
         try {
             // Guardar el mensaje en la base de datos
@@ -135,8 +147,18 @@ public class MensajeriaRestController {
      * @param mensajeria: Objeto Mensajeria que se va a actualizar
      */
     @PutMapping("/mensajerias")
-    public ResponseEntity<Map<String, Object>> update(@RequestBody Mensajeria mensajeria) {
+    public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody Mensajeria mensajeria, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
+
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+                    .toList();
+
+            response.put("errors", errors);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
 
         try {
             // Verificar si el mensajeria existe antes de actualizar
