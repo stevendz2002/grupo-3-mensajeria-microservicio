@@ -1,11 +1,11 @@
 package co.edu.uceva.microserviciomensajeria.model.repositories;
 
 import co.edu.uceva.microserviciomensajeria.model.entities.Mensajeria;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Interface que hereda de CrudRepository para realizar las
- * operaciones de CRUD sobre la entidad Producto
+ * Interface que hereda de JpaRepository para realizar las
+ * operaciones de CRUD paginacion y ordenamiento sobre la entidad Producto
  */
-public interface IMensajeriaRepository extends CrudRepository<Mensajeria, Long> {
+public interface IMensajeriaRepository extends JpaRepository<Mensajeria, Long> {
 }
