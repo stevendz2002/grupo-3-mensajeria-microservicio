@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Clase que implementa los métodos de la interfaz IMensajeriaService
@@ -36,8 +37,8 @@ public class MensajeriaServiceImpl implements IMensajeriaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Mensajeria findById(Long id) {
-        return mensajeriaRepository.findById(id).orElse(null);
+    public Optional<Mensajeria> findById(Long id) {
+        return mensajeriaRepository.findById(id);
     }
 
     @Override

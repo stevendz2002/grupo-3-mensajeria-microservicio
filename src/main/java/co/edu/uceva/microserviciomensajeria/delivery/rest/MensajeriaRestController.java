@@ -1,8 +1,12 @@
 package co.edu.uceva.microserviciomensajeria.delivery.rest;
 
-import jakarta.validation.Valid;
-import co.edu.uceva.microserviciomensajeria.domain.model.Mensajeria ;
+import co.edu.uceva.microserviciomensajeria.domain.exception.NoHayMensajesException;
+import co.edu.uceva.microserviciomensajeria.domain.exception.PaginaSinMensajesException;
+import co.edu.uceva.microserviciomensajeria.domain.exception.MensajeNoEncontradoException;
+import co.edu.uceva.microserviciomensajeria.domain.exception.ValidationException;
+import co.edu.uceva.microserviciomensajeria.domain.model.Mensajeria;
 import co.edu.uceva.microserviciomensajeria.domain.services.IMensajeriaService;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,11 +27,12 @@ public class MensajeriaRestController {
     // Declaramos como final el servicio para mejorar la inmutabilidad
     private final IMensajeriaService mensajeriaService;
 
-    private static final String ERROR = "error";
+    // Constantes para los mensajes de respuesta
     private static final String MENSAJE = "mensaje";
-    private static final String CORREO = "correo";
-    private static final String CORREOS = "correos";
+    private static final String MENSAJERIA = "mensajeria";
+    private static final String MENSAJERIAS = "mensajerias";
 
+    // Inyección de dependencia del servicio que proporciona servicios de CRUD
     public MensajeriaRestController(IMensajeriaService mensajeriaService) {
         this.mensajeriaService = mensajeriaService;
     }
@@ -37,25 +42,13 @@ public class MensajeriaRestController {
      */
     @GetMapping("/mensajerias")
     public ResponseEntity<Map<String, Object>> getMensajerias() {
-        Map<String, Object> response = new HashMap<>();
-
-        try {
-            List<Mensajeria> mensajerias = mensajeriaService.findAll();
-
-            if (mensajerias.isEmpty()) {
-                response.put(MENSAJE, "No hay correos en la base de datos.");
-                response.put(CORREOS, mensajerias); // para que sea siempre el mismo campo
-                return ResponseEntity.status(HttpStatus.OK).body(response); // 200 pero lista vacía
-            }
-
-            response.put(CORREOS, mensajerias);
-            return ResponseEntity.ok(response);
-
-        } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al consultar la base de datos.");
-            response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        List<Mensajeria> mensajerias = mensajeriaService.findAll();
+        if (mensajerias.isEmpty()) {
+            throw new NoHayMensajesException();
         }
+        Map<String, Object> response = new HashMap<>();
+        response.put(MENSAJERIAS, mensajerias);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -63,59 +56,27 @@ public class MensajeriaRestController {
      */
     @GetMapping("/mensajeria/page/{page}")
     public ResponseEntity<Object> index(@PathVariable Integer page) {
-        Map<String, Object> response = new HashMap<>();
         Pageable pageable = PageRequest.of(page, 4);
-
-        try {
-            Page<Mensajeria> mensajerias = mensajeriaService.findAll(pageable);
-
-            if (mensajerias.isEmpty()) {
-                response.put(MENSAJE, "No hay mensajerias en la página solicitada.");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
-            return ResponseEntity.ok(mensajerias);
-
-        } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al consultar la base de datos.");
-            response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        } catch (IllegalArgumentException e) {
-            response.put(MENSAJE, "Número de página inválido.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        Page<Mensajeria> mensajerias = mensajeriaService.findAll(pageable);
+        if (mensajerias.isEmpty()) {
+            throw new PaginaSinMensajesException(page);
         }
+        return ResponseEntity.ok(mensajerias);
     }
 
     /**
-     * Crear un nuevo mensajer pasando el objeto en el cuerpo de la petición, usando validaciones.
+     * Crear un nuevo mensajeria pasando el objeto en el cuerpo de la petición, usando validaciones
      */
     @PostMapping("/mensajerias")
-    public ResponseEntity<Map<String, Object>> save(@Valid @RequestBody Mensajeria mensajeria,BindingResult result) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<Map<String, Object>> save(@Valid @RequestBody Mensajeria mensajeria, BindingResult result) {
         if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .toList();
-
-            response.put("errors", errors);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            throw new ValidationException(result);
         }
-
-        try {
-            // Guardar el mensaje en la base de datos
-            Mensajeria nuevoMensajeria = mensajeriaService.save(mensajeria);
-
-            response.put(MENSAJE, "El mensajeria ha sido creado con éxito!");
-            response.put(CORREO, nuevoMensajeria);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-        } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al insertar el mensajeria en la base de datos.");
-            response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        Map<String, Object> response = new HashMap<>();
+        Mensajeria nuevoMensajeria = mensajeriaService.save(mensajeria);
+        response.put(MENSAJE, "El mensajeria ha sido creado con éxito!");
+        response.put(MENSAJERIA, nuevoMensajeria);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
@@ -124,22 +85,13 @@ public class MensajeriaRestController {
      */
     @DeleteMapping("/mensajerias")
     public ResponseEntity<Map<String, Object>> delete(@RequestBody Mensajeria mensajeria) {
+        mensajeriaService.findById(mensajeria.getId())
+                .orElseThrow(() -> new MensajeNoEncontradoException(mensajeria.getId()));
+        mensajeriaService.delete(mensajeria);
         Map<String, Object> response = new HashMap<>();
-        try {
-            Mensajeria mensajeriaExistente = mensajeriaService.findById(mensajeria.getId());
-            if (mensajeriaExistente == null) {
-                response.put(MENSAJE, "El mensajeria ID: " + mensajeria.getId() + " no existe en la base de datos.");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
-            mensajeriaService.delete(mensajeria);
-            response.put(MENSAJE, "El mensajeria ha sido eliminado con éxito!");
-            return ResponseEntity.ok(response);
-        } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al eliminar el mensajeria de la base de datos.");
-            response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        response.put(MENSAJE, "El mensajeria ha sido eliminado con éxito!");
+        response.put(MENSAJERIA, null);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -148,37 +100,16 @@ public class MensajeriaRestController {
      */
     @PutMapping("/mensajerias")
     public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody Mensajeria mensajeria, BindingResult result) {
-        Map<String, Object> response = new HashMap<>();
-
         if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors()
-                    .stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .toList();
-
-            response.put("errors", errors);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            throw new ValidationException(result);
         }
-
-        try {
-            // Verificar si el mensajeria existe antes de actualizar
-            if (mensajeriaService.findById(mensajeria.getId()) == null) {
-                response.put(MENSAJE, "Error: No se pudo editar, el mensajeria ID: " + mensajeria.getId() + " no existe en la base de datos.");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
-            // Guardar directamente el mensajeria actualizado en la base de datos
-            Mensajeria mensajeriaActualizado = mensajeriaService.save(mensajeria);
-
-            response.put(MENSAJE, "El mensajeria ha sido actualizado con éxito!");
-            response.put(CORREO, mensajeriaActualizado);
-            return ResponseEntity.ok(response);
-
-        } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al actualizar el mensajeria en la base de datos.");
-            response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        mensajeriaService.findById(mensajeria.getId())
+                .orElseThrow(() -> new MensajeNoEncontradoException(mensajeria.getId()));
+        Map<String, Object> response = new HashMap<>();
+        Mensajeria mensajeriaActualizado = mensajeriaService.update(mensajeria);
+        response.put(MENSAJE, "El mensajeria ha sido actualizado con éxito!");
+        response.put(MENSAJERIA, mensajeriaActualizado);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -186,25 +117,11 @@ public class MensajeriaRestController {
      */
     @GetMapping("/mensajerias/{id}")
     public ResponseEntity<Map<String, Object>> findById(@PathVariable Long id) {
+        Mensajeria mensajeria = mensajeriaService.findById(id)
+                .orElseThrow(() -> new MensajeNoEncontradoException(id));
         Map<String, Object> response = new HashMap<>();
-
-        try {
-            Mensajeria mensajeria = mensajeriaService.findById(id);
-
-            if (mensajeria == null) {
-                response.put(MENSAJE, "El mensajeria ID: " + id + " no existe en la base de datos.");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
-            response.put(MENSAJE, "El mensajeria ha sido actualizado con éxito!");
-            response.put(CORREO, mensajeria);
-            return ResponseEntity.ok(response);
-
-        } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al consultar la base de datos.");
-            response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        response.put(MENSAJE, "El mensajeria ha sido encontrado con éxito!");
+        response.put(MENSAJERIA, mensajeria);
+        return ResponseEntity.ok(response);
     }
-
 }

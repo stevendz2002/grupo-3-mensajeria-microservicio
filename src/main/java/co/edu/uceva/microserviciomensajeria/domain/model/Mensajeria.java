@@ -14,14 +14,9 @@ public class Mensajeria {
     private Long id;
 
     @NotEmpty(message = "No puede estar vacío")
-    @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")
+    @Size(min = 2, max = 255, message = "El tamaño tiene que estar entre 2 y 20")
     @Column(nullable = false)
-    private String remitente;
-
-    @NotEmpty(message = "No puede estar vacío")
-    @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")
-    @Column(nullable = false)
-    private String destinatario;
+    private String correoDestinatario;
 
     @NotEmpty(message = "No puede estar vacío")
     @Size(max = 255, message = "El asunto no puede tener más de 255 caracteres")
@@ -29,7 +24,7 @@ public class Mensajeria {
 
     @NotEmpty(message = "No puede estar vacío")
     @Size(max = 1000, message = "El mensaje no puede tener más de 1000 caracteres")
-    private String mensaje;
+    private String cuerpoCorreo;
 
     @NotNull(message = "La fecha de envío es obligatoria")
     @Column(nullable = false)
