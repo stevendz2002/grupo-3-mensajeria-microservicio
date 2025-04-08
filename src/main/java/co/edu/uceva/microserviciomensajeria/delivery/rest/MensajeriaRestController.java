@@ -74,14 +74,14 @@ public class MensajeriaRestController {
         }
         Map<String, Object> response = new HashMap<>();
         Mensajeria nuevoMensajeria = mensajeriaService.save(mensajeria);
-        response.put(MENSAJE, "El mensajeria ha sido creado con éxito!");
+        response.put(MENSAJE, "El mensaje ha sido creado con éxito!");
         response.put(MENSAJERIA, nuevoMensajeria);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
     /**
-     * Eliminar un mensajeria pasando el objeto en el cuerpo de la petición.
+     * Eliminar un mensaje pasando el objeto en el cuerpo de la petición.
      */
     @DeleteMapping("/mensajerias")
     public ResponseEntity<Map<String, Object>> delete(@RequestBody Mensajeria mensajeria) {
@@ -89,7 +89,7 @@ public class MensajeriaRestController {
                 .orElseThrow(() -> new MensajeNoEncontradoException(mensajeria.getId()));
         mensajeriaService.delete(mensajeria);
         Map<String, Object> response = new HashMap<>();
-        response.put(MENSAJE, "El mensajeria ha sido eliminado con éxito!");
+        response.put(MENSAJE, "El mensaje ha sido eliminado con éxito!");
         response.put(MENSAJERIA, null);
         return ResponseEntity.ok(response);
     }
@@ -107,7 +107,7 @@ public class MensajeriaRestController {
                 .orElseThrow(() -> new MensajeNoEncontradoException(mensajeria.getId()));
         Map<String, Object> response = new HashMap<>();
         Mensajeria mensajeriaActualizado = mensajeriaService.update(mensajeria);
-        response.put(MENSAJE, "El mensajeria ha sido actualizado con éxito!");
+        response.put(MENSAJE, "El mensaje ha sido actualizado con éxito!");
         response.put(MENSAJERIA, mensajeriaActualizado);
         return ResponseEntity.ok(response);
     }
@@ -120,7 +120,7 @@ public class MensajeriaRestController {
         Mensajeria mensajeria = mensajeriaService.findById(id)
                 .orElseThrow(() -> new MensajeNoEncontradoException(id));
         Map<String, Object> response = new HashMap<>();
-        response.put(MENSAJE, "El mensajeria ha sido encontrado con éxito!");
+        response.put(MENSAJE, "El mensaje ha sido encontrado con éxito!");
         response.put(MENSAJERIA, mensajeria);
         return ResponseEntity.ok(response);
     }

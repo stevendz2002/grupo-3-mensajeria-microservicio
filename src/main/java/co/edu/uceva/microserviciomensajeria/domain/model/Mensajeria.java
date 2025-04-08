@@ -1,9 +1,13 @@
 package co.edu.uceva.microserviciomensajeria.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -27,6 +31,9 @@ public class Mensajeria {
     private String cuerpoCorreo;
 
     @NotNull(message = "La fecha de envío es obligatoria")
+    @Temporal(TemporalType.DATE)
+     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     @Column(nullable = false)
-    private String fechaEnvio;
+    private LocalDate fechaEnvio;
 }

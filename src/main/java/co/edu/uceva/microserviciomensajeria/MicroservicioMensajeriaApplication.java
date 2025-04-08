@@ -1,4 +1,4 @@
-package co.edu.uceva.microserviciomensajeria.domain;
+package co.edu.uceva.microserviciomensajeria;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
