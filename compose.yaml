@@ -1,6 +1,6 @@
 
 services:
-  producto-service:
+  mensajeria-service:
     image:    steven2000300/microservicio-mensajeria:latest
     container_name: microservicio-mensajeria
     restart: unless-stopped
